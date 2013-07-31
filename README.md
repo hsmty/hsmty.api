@@ -1,5 +1,30 @@
 # Hackerspace API handler
 
+## SpaceAPI API
+
+Middleware to generate the status.json for the hackerspace and also
+mantains information about our events, current and future. Currently
+uses basic auth for authentication.
+
+### GET /status.json
+
+Returns the SpaceAPI status file as described [here][1].
+
+  [1]: http://spaceapi.net/
+
+### POST /status/update
+
+Updates the status of the hackerspace with a Open/Close notification,
+sensor information or some other 'event' in the space.
+
+### GET /status/events
+
+List all the current and planned events in the hackerspace.
+
+### POST /status/events
+
+Adds and event to the calendar, returns an UUID for that event.
+
 ## idevices Push API endpoints
 
 We define the methods to interact with the idevices (iPhone, iPad) with
