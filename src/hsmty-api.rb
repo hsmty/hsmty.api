@@ -28,7 +28,7 @@ end
 
 get '/idevices/:token' do |token|
     db = getdbh()
-    device = db[:devices].where(:token => token).first
+    device = db[:idevices].where(:token => token).first
     if device then
         { :device => device[:id]}.to_json
     else
