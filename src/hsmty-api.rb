@@ -17,8 +17,8 @@ def createstatus()
     status = JSON.parse(file.read)
 
     if (status and status['state']) then
-        open = db[:status].select(:state).reverse_order(:changed).limit(1).all[0]
-        status['state'][:open] = open
+        row = db[:status].select(:state).reverse_order(:changed).limit(1).first
+        status['state'][:open] = row[:state]
     else
         status = {}
     end
