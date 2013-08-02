@@ -21,17 +21,22 @@ end
 get '/idevices/?' do
     db = getdbh()
     count = db[:devices].count
-    return count.to_s
+    return {
+        :devices => count
+    }.to_json
 end
 
 get '/idevices/:token' do |token|
     db = getdbh()
     device = db[:devices].where(:token => token).first
     if device then
-        'found'
+        { :device => 'found'}.to_json
     else
         status 404
-        body 'Device not found'
+        body ({
+            :error => 404,
+            :msg => 'Device not found'
+        }.to_json)
     end
 end
 
@@ -45,7 +50,7 @@ put '/idevices/:token' do |token|
             :token => tokey,
             :version => 0
         )
-        
+       
     elsif (reg)
         status 400
         body 'Missing params'
