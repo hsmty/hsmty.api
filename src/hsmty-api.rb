@@ -11,13 +11,14 @@ get '/status.json' do
 end
 
 def createstatus()
-    dbh = getdbh();
+    db = getdbh();
 
     file = open('status.json')
     status = JSON.parse(file.read)
 
     if (status and status['state']) then
-        status['state'][:open] = true
+        open = db[:status].select(:state).reverse_order(:changed).limit(1).all[0]
+        status['state'][:open] = open
     else
         status = {}
     end
