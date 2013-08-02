@@ -20,7 +20,7 @@ end
 
 get '/idevices/?' do
     db = getdbh()
-    count = db[:devices].count
+    count = db[:idevices].count
     return {
         :devices => count
     }.to_json
@@ -30,7 +30,7 @@ get '/idevices/:token' do |token|
     db = getdbh()
     device = db[:devices].where(:token => token).first
     if device then
-        { :device => 'found'}.to_json
+        { :device => device[:id]}.to_json
     else
         status 404
         body ({
@@ -44,10 +44,10 @@ put '/idevices/:token' do |token|
     reg = JSON.parse(request.body.read)
     if (reg and reg['id'] and reg['key']) then
         db = getdbh()
-        db[:devices].insert(
+        db[:idevices].insert(
             :id  => reg['id'],
             :key => reg['key'],
-            :token => tokey,
+            :token => token,
             :version => 0
         )
        
