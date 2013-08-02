@@ -1,0 +1,23 @@
+{
+    "api":"0.13",
+    "space":"HSMTY",
+    "logo":"http://hsmty.org/images/logo.png",
+    "url":"http://hsmty.org",
+    "location":{
+        "address":"Isaac Garza",
+        "lon":"-100.307364",
+        "lat":"25.679919"
+    },
+    "contact":{
+        "ml": "general@hsmty.org",
+        "irc": "irc://irc.freenode.net/#hsmty",
+        "twitter": "@hackersmty" 
+    },
+    "state":{
+        "icon":{
+            "open":"http://hsmty.org/images/open.png",
+            "closed":"http://hsmty.org/images/closed.png"
+        },
+        "open": false
+    }
+}
