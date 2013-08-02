@@ -25,7 +25,7 @@ List all the current and planned events in the hackerspace.
 
 Adds and event to the calendar, returns an UUID for that event.
 
-## idevices Push API endpoints
+## iDevices
 
 We define the methods to interact with the idevices (iPhone, iPad) with
 the PushAPI handled by Apple servers, we use PUT, GET, POST and DELETE for 
@@ -85,7 +85,10 @@ services to be handlend by the server.
 
 Removes this token and its related information from our server.
 
-## Web update API
+## Web site manager
+
+For now only regenerates the website from the github directory (this is all
+configured in the web server, we only run the update.sh).
 
 ### GET /web/update?key={KEY}&user={NAME}
 
