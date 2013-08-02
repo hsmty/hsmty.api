@@ -77,3 +77,10 @@ services to be handlend by the server.
 ### DELETE /idevice/{TOKEN}
 
 Removes this token and its related information from our server.
+
+## Web update API
+
+### GET /web/update?key={KEY}&user={NAME}
+
+Updates the website if the user is allowed via his key, this is used to
+allow the push notification from github to our webserver.
