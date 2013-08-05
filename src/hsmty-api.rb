@@ -61,6 +61,26 @@ put '/idevices/:token' do |token|
 
 end
 
+post '/idevices/:token' do |token|
+    # restricted!
+    request.body.rewind
+    req = JSON.parse(request.body.read)
+
+    if defined? req['spaceapi']['add'] then
+        db = getdbh()
+        req['spaceapi']['add'].each do |url|
+            id = db[:spaces].select(:name).where(:url => url).get 
+            db[:spaces_idevices].insert(
+                :token => token, 
+                :space => id
+            )
+        end
+    end
+
+    if defined? req['spaceapi']['del'] then
+    end
+end
+        
 def createstatus()
     db = getdbh()
 
