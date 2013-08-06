@@ -1,7 +1,33 @@
 
 require 'sinatra'
 require 'json'
+require 'bcrypt'
 require 'sequel'
+
+helpers do
+    def protected!
+        return if authorized?
+        headers['WWW-Authenticate'] = 'Basic realm="Restricted Area"'
+        halt 401, "Not authorized\n"
+    end
+
+    def authorized?
+        @auth ||=  Rack::Auth::Basic::Request.new(request.env)
+        user, pass, stored = nil
+        if (@auth.provided? and @auth.basic? and @auth.crentials) then
+            db = getdbh()
+            user, pass = @auth.credentials
+            hash = db[:users].select(:pass).where(:nick => user).get
+            stored = BCrypt::Password.new(hash)
+        end
+
+        if stored and stored == pass then
+            return true
+        end
+
+        return false
+    end
+end
 
 error 400 do |mesg|
     if mesg then
@@ -18,6 +44,21 @@ get '/status.json' do
     status.to_json
 end
 
+post '/status/update' do
+    protected!
+
+    status = params[:status]
+    unless status == :open or status == :close then
+        halt 401
+    end
+
+    current = db[:status].select(:state).reverse_order(:changed).get
+
+    if status != current then
+        db[:status].insert(:status => status)
+    end
+end
+
 get '/idevices/?' do
     db = getdbh()
     count = db[:idevices].count
@@ -25,6 +66,7 @@ get '/idevices/?' do
         :devices => count
     }.to_json
 end
+
 
 get '/idevices/:token' do |token|
     db = getdbh()
@@ -41,6 +83,7 @@ get '/idevices/:token' do |token|
 end
 
 put '/idevices/:token' do |token|
+    request.body.rewind
     reg = JSON.parse(request.body.read)
     if (reg and reg['id'] and reg['key']) then
         db = getdbh()
@@ -88,8 +131,8 @@ def createstatus()
     status = JSON.parse(file.read)
 
     if (status and status['state']) then
-        row = db[:status].select(:state).reverse_order(:changed).limit(1).first
-        status['state'][:open] = row[:state]
+        row = db[:status].select(:state).reverse_order(:changed)
+        status['state'][:open] = row.get
     else
         status = {}
     end
