@@ -67,7 +67,6 @@ get '/idevices/?' do
     }.to_json
 end
 
-
 get '/idevices/:token' do |token|
     db = getdbh()
     device = db[:idevices].where(:token => token).first
@@ -105,7 +104,7 @@ put '/idevices/:token' do |token|
 end
 
 post '/idevices/:token' do |token|
-    # restricted!
+    restricted!
     request.body.rewind
     req = JSON.parse(request.body.read)
 
