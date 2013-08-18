@@ -11,12 +11,12 @@ class APITest < Test::Unit::TestCase
 
     def test_index
         get '/'
-        assert_equal 200, last_response.status
+        assert last_response.ok?
     end
 
     def test_status
         get '/status.json'
-        assert_equal 200, last_response.status
+        assert last_response.ok?
+        assert_equal 'application/json', last_response.header['Content-type']
     end
-
 end

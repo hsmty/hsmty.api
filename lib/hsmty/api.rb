@@ -68,6 +68,7 @@ get '/status.json' do
 
     status = createstatus()
 
+    headers "Content-type" => 'application/json'
     status.to_json
 end
 
