@@ -20,8 +20,11 @@ class APITest < Test::Unit::TestCase
         assert_equal 'application/json', last_response.header['Content-type']
     end
 
-    def test_protected_status
+    def test_update_status
         post '/status/update'
         assert_equal 401, last_response.status
+        authorize 'root', 'password'
+        post '/status/update', :status => 'open'
+        assert_equal 200, last_response.status
     end
 end
