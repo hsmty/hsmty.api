@@ -13,11 +13,13 @@ helpers do
     def authorized?
         @auth ||=  Rack::Auth::Basic::Request.new(request.env)
         user, pass, stored = nil
-        if (@auth.provided? and @auth.basic? and @auth.crentials) then
+        if @auth.provided? and @auth.basic? and @auth.credentials then
             db = getdbh()
             user, pass = @auth.credentials
             hash = db[:users].select(:pass).where(:nick => user).get
-            stored = BCrypt::Password.new(hash)
+            if hash
+                stored = BCrypt::Password.new(hash)
+            end
         end
 
         if stored and stored == pass then
