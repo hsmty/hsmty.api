@@ -163,7 +163,7 @@ def createstatus()
 
     if (status and status['state']) then
         row = db[:status].reverse_order(:changed)
-        status['state'][:open] = row.get(:states)
+        status['state'][:open] = row.get(:state)
     else
         status = {}
     end
