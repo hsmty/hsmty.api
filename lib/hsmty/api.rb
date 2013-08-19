@@ -78,19 +78,20 @@ post '/status/update' do
     protected!
 
     status = params[:status]
-    unless status == 'open' or status == 'close' then
+
+    if status == 'open'
+        status = true
+    elsif status == 'close'
+        status = false
+    else
         halt 400
     end
 
     db = getdbh()
     current = db[:status].reverse_order(:changed).get(:state)
 
+
     if status != current then
-        if status == 'open'
-            status = true
-        else
-            status = false
-        end
 
         db[:status].insert(:state => status, :changed => Time.now().to_i)
     end
