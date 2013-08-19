@@ -92,7 +92,7 @@ post '/status/update' do
             status = false
         end
 
-        db[:status].insert(:state => status)
+        db[:status].insert(:state => status, :changed => Time.now().to_i)
     end
     
     'Updated'
