@@ -41,7 +41,7 @@ helpers do
         if @auth.provided? and @auth.basic and @auth.credentials then
             db = getdbh()
             uuid, key = @auth.credentials
-            hash = db[:idevices]where(:uuid => uuid).get(:secret)
+            hash = db[:idevices].where(:uuid => uuid).get(:secret)
             stored = BCrypt::Password.new(hash)
         end
 
