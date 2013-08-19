@@ -23,7 +23,7 @@ class APITest < Test::Unit::TestCase
     def test_update_status
         post '/status/update'
         assert_equal 401, last_response.status
-        authorize 'root', 'password'
+        authorize 'admin', 'admin'
         post '/status/update', :status => 'open'
         assert_equal 200, last_response.status
     end
