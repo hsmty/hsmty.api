@@ -74,7 +74,7 @@ get '/status.json' do
     status.to_json
 end
 
-post '/status/update' do
+post '/status' do
     protected!
 
     status = params[:status]

@@ -23,15 +23,16 @@ class APITest < Test::Unit::TestCase
     end
 
     def test_update_status
-        post '/status/update', :status => 'open'
+        post '/status', :status => 'open'
         assert_equal 401, last_response.status
         authorize 'admin', 'admin'
-        post '/status/update', :status => 'open'
+        post '/status', :status => 'open'
         assert_equal 200, last_response.status
         get '/status.json'
         status = JSON.parse(last_response.body)
         assert status['state']['open'], "Didn't update status as open"
-        post '/status/update', :status => 'close'
+        sleep(1)
+        post '/status', :status => 'close'
         get '/status.json'
         status = JSON.parse(last_response.body)
         assert_equal false, status['state']['open'], "Didn't update status as close"

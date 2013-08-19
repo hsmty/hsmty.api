@@ -12,7 +12,7 @@ Returns the SpaceAPI status file as described [here][1].
 
   [1]: http://spaceapi.net/
 
-### POST /status/update
+### POST /status
 
 Updates the status of the hackerspace with a Open/Close notification,
 sensor information or some other 'event' in the space, should contain
