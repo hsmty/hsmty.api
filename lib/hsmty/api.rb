@@ -16,7 +16,7 @@ helpers do
         if @auth.provided? and @auth.basic? and @auth.credentials then
             db = getdbh()
             user, pass = @auth.credentials
-            hash = db[:users].select(:pass).where(:nick => user).get
+            hash = db[:users].where(:nick => user).get(:password)
             if hash
                 stored = BCrypt::Password.new(hash)
             end
@@ -41,7 +41,7 @@ helpers do
         if @auth.provided? and @auth.basic and @auth.credentials then
             db = getdbh()
             uuid, key = @auth.credentials
-            hash = db[:idevices].select(:secret).where(:uuid => uuid).get
+            hash = db[:idevices]where(:uuid => uuid).get(:secret)
             stored = BCrypt::Password.new(hash)
         end
 
@@ -82,7 +82,7 @@ post '/status/update' do
         halt 401
     end
 
-    current = db[:status].select(:state).reverse_order(:changed).get
+    current = db[:status].reverse_order(:changed).get(:state)
 
     if status != current then
         db[:status].insert(:status => status)
@@ -143,7 +143,7 @@ post '/idevices/:token' do |token|
     if defined? req['spaceapi']['add'] then
         db = getdbh()
         req['spaceapi']['add'].each do |url|
-            id = db[:spaces].select(:name).where(:url => url).get 
+            id = db[:spaces].where(:url => url).get(:name)
             db[:spaces_idevices].insert(
                 :token => token, 
                 :space => id
@@ -162,8 +162,8 @@ def createstatus()
     status = JSON.parse(file.read)
 
     if (status and status['state']) then
-        row = db[:status].select(:state).reverse_order(:changed)
-        status['state'][:open] = row.get
+        row = db[:status].reverse_order(:changed)
+        status['state'][:open] = row.get(:states)
     else
         status = {}
     end
