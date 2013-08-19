@@ -15,7 +15,8 @@ Returns the SpaceAPI status file as described [here][1].
 ### POST /status/update
 
 Updates the status of the hackerspace with a Open/Close notification,
-sensor information or some other 'event' in the space.
+sensor information or some other 'event' in the space, should contain
+status={open,close} as form data to update the space's status.
 
 ### GET /status/events
 
