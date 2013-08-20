@@ -37,4 +37,9 @@ class APITest < Test::Unit::TestCase
         status = JSON.parse(last_response.body)
         assert_equal false, status['state']['open'], "Didn't update status as close"
     end
+
+    def test_events
+        get '/status/events'
+        assert last_response.ok?
+    end
 end

@@ -99,6 +99,10 @@ post '/status' do
     'Updated'
 end
 
+get '/status/events' do
+    return [].to_json
+end
+
 get '/idevices/?' do
     db = getdbh()
     count = db[:idevices].count
