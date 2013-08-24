@@ -104,7 +104,7 @@ get '/status/events' do
 end
 
 post '/status/events' do
-    check_key!
+    protected!
 end
 
 get '/idevices/?' do
