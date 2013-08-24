@@ -103,6 +103,10 @@ get '/status/events' do
     return [].to_json
 end
 
+post '/status/events' do
+    check_key!
+end
+
 get '/idevices/?' do
     db = getdbh()
     count = db[:idevices].count

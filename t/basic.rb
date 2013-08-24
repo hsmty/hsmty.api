@@ -48,6 +48,11 @@ class APITest < Test::Unit::TestCase
     def test_events
         get '/status/events'
         assert last_response.ok?
+        post '/status/events',
+            :time => Time.now() + 3600,
+            :name => 'Test event'
+        assert_equal 401, last_response.status, 
+            "It shouldn't give us access without auth"
     end
 
     def create_user
