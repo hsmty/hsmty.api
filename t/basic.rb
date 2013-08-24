@@ -3,9 +3,14 @@ require 'test/unit'
 require 'rack/test'
 
 require 'json'
+require 'sequel'
+require 'bcrypt'
 
 class APITest < Test::Unit::TestCase
     include Rack::Test::Methods
+    @@user = '__tester'
+    @@pass = 'supersecretpassword'
+    @@db = '/tmp/hsmty.db'
 
     def app
         Sinatra::Application
@@ -23,9 +28,10 @@ class APITest < Test::Unit::TestCase
     end
 
     def test_update_status
+        create_user
         post '/status', :status => 'open'
         assert_equal 401, last_response.status
-        authorize 'admin', 'admin'
+        authorize @@user, @@pass
         post '/status', :status => 'open'
         assert_equal 200, last_response.status
         get '/status.json'
@@ -36,10 +42,25 @@ class APITest < Test::Unit::TestCase
         get '/status.json'
         status = JSON.parse(last_response.body)
         assert_equal false, status['state']['open'], "Didn't update status as close"
+        delete_user
     end
 
     def test_events
         get '/status/events'
         assert last_response.ok?
+    end
+
+    def create_user
+        hash = BCrypt::Password.create(@@pass)
+        db = Sequel.sqlite(@@db)
+        db[:users].insert(
+            :nick => @@user,
+            :password => hash.to_s
+        )
+    end
+
+    def delete_user
+        db = Sequel.sqlite(@@db)
+        db[:users].where(:nick => @@user).delete
     end
 end
