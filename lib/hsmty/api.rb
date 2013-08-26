@@ -101,7 +101,40 @@ post '/status/events' do
     protected!
 
     name = params[:name]
-    time = params[:time]
+    type = params[:type]
+
+    if type.nil?
+        halt 400, 'Missing event type'
+    end
+
+    unless name
+        halt 400, 'Missing name for event'
+    end
+
+    uid = get_uid()
+    db = getdbh()
+    id = db[:events].insert(
+        :name => name,
+        :time => Time.now.to_i,
+        :type => type,
+        :created_by => uid
+        )
+    "Event Saved"
+
+end
+
+get '/status/happenings' do
+    db = getdbh()
+    events = db[:happenings].all    
+    return events.to_json
+end
+
+post '/status/happenings' do
+    protected!
+
+    name = params[:name]
+    time = params[:time].to_i
+    cost = params[:cost]
 
     if time.to_i < Time.now().to_i 
         halt 400, 'Time is before now'
@@ -113,15 +146,16 @@ post '/status/events' do
 
     uid = get_uid()
     db = getdbh()
-    id = db[:events].insert(
+    id = db[:happenings].insert(
         :name => name,
         :time => time,
-        :created_by => 3
+        :cost => cost,
+        :created => Time.now.to_i,
+        :created_by => uid
         )
     "Event Saved"
 
 end
-
 get '/idevices/?' do
     db = getdbh()
     count = db[:idevices].count
@@ -205,7 +239,6 @@ def createstatus()
 end
 
 def get_uid()
-    return 1
     db = getdbh()
     user, pass = @auth.credentials
     id = db[:users].where(:nick => user).get(:id)

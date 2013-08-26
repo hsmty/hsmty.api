@@ -48,20 +48,20 @@ class APITest < Test::Unit::TestCase
     def test_events
         create_user # Creates a Test user
         name = 'Test event'
-        start = Time.now().to_i + 3600
         clear_events
 
         get '/status/events'
         assert last_response.ok?
         post '/status/events',
-            :time => start,
+            :type => 'Check-in',
             :name => name
         assert_equal 401, last_response.status, 
             "It shouldn't give us access without auth"
         authorize @@user, @@pass
         post '/status/events',
-            :time => start,
+            :type => 'Check-in',
             :name => name
+        puts last_response.body
         assert_equal 200, last_response.status, 
             "Error authorizing the request"
         get '/status/events'
@@ -69,6 +69,38 @@ class APITest < Test::Unit::TestCase
         events = JSON.parse(last_response.body)
         assert_equal 1, events.length,
             "Event didn't get saved"
+        clear_events
+        delete_user # Clean ourselves
+    end
+
+    def test_happenings
+        create_user # Creates a Test user
+        name = 'Test Happening'
+        start = Time.now().to_i + 3600
+        cost = 300
+        clear_happenings
+
+        get '/status/happenings'
+        assert last_response.ok?
+        post '/status/happenings',
+            :time => start,
+            :name => name,
+            :cost => cost
+        assert_equal 401, last_response.status, 
+            "It shouldn't give us access without auth"
+        authorize @@user, @@pass
+        post '/status/happenings',
+            :time => start,
+            :name => name,
+            :cost => cost
+        assert_equal 200, last_response.status, 
+            "Error authorizing the request"
+        get '/status/happenings'
+        assert last_response.ok?
+        happenings = JSON.parse(last_response.body)
+        assert_equal 1, happenings.length,
+            "Happenings didn't get saved"
+        clear_happenings
         delete_user # Clean ourselves
     end
 
@@ -89,5 +121,10 @@ class APITest < Test::Unit::TestCase
     def clear_events
         db = Sequel.sqlite(@@db)
         db[:events].delete
+    end
+
+    def clear_happenings
+        db = Sequel.sqlite(@@db)
+        db[:happenings].delete
     end
 end
