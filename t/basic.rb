@@ -37,7 +37,7 @@ class APITest < Test::Unit::TestCase
         get '/status.json'
         status = JSON.parse(last_response.body)
         assert status['state']['open'], "Didn't update status as open"
-        sleep(1)
+        sleep(1) # Avoid race condition
         post '/status', :status => 'close'
         get '/status.json'
         status = JSON.parse(last_response.body)
@@ -46,13 +46,29 @@ class APITest < Test::Unit::TestCase
     end
 
     def test_events
+        create_user # Creates a Test user
+        title = 'Test event'
+        start = Time.now() + 3600
+
         get '/status/events'
         assert last_response.ok?
         post '/status/events',
-            :time => Time.now() + 3600,
-            :name => 'Test event'
+            :time => start,
+            :name => title
         assert_equal 401, last_response.status, 
             "It shouldn't give us access without auth"
+        authorize @@user, @@pass
+        post '/status/events',
+            :time => start,
+            :name => title
+        assert_equal 200, last_response.status, 
+            "Error authorizing the request"
+        get '/status/events'
+        assert last_response.ok?
+        events = JSON.parse(last_response.body)
+        assert_equal 1, events.length,
+            "Event didn't get saved"
+        delete_user # Clean ourselves
     end
 
     def create_user
