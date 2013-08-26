@@ -47,20 +47,21 @@ class APITest < Test::Unit::TestCase
 
     def test_events
         create_user # Creates a Test user
-        title = 'Test event'
-        start = Time.now() + 3600
+        name = 'Test event'
+        start = Time.now().to_i + 3600
+        clear_events
 
         get '/status/events'
         assert last_response.ok?
         post '/status/events',
             :time => start,
-            :name => title
+            :name => name
         assert_equal 401, last_response.status, 
             "It shouldn't give us access without auth"
         authorize @@user, @@pass
         post '/status/events',
             :time => start,
-            :name => title
+            :name => name
         assert_equal 200, last_response.status, 
             "Error authorizing the request"
         get '/status/events'
@@ -83,5 +84,10 @@ class APITest < Test::Unit::TestCase
     def delete_user
         db = Sequel.sqlite(@@db)
         db[:users].where(:nick => @@user).delete
+    end
+
+    def clear_events
+        db = Sequel.sqlite(@@db)
+        db[:events].delete
     end
 end

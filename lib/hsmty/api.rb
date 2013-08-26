@@ -54,14 +54,6 @@ helpers do
 
 end
 
-error 400 do |mesg|
-    if mesg then
-        'Bad Request: #{mesg}'
-    else
-        'Bad Request'
-    end
-end
-
 get '/' do
     'HSMTY API'
 end
@@ -100,11 +92,34 @@ post '/status' do
 end
 
 get '/status/events' do
-    return [].to_json
+    db = getdbh()
+    events = db[:events].all    
+    return events.to_json
 end
 
 post '/status/events' do
     protected!
+
+    name = params[:name]
+    time = params[:time]
+
+    if time.to_i < Time.now().to_i 
+        halt 400, 'Time is before now'
+    end
+
+    unless name
+        halt 400, 'Missing name for event'
+    end
+
+    uid = get_uid()
+    db = getdbh()
+    id = db[:events].insert(
+        :name => name,
+        :time => time,
+        :created_by => 3
+        )
+    "Event Saved"
+
 end
 
 get '/idevices/?' do
@@ -187,6 +202,13 @@ def createstatus()
     end
 
     return status
+end
+
+def get_uid()
+    return 1
+    db = getdbh()
+    user, pass = @auth.credentials
+    id = db[:users].where(:nick => user).get(:id)
 end
 
 def getdbh()
