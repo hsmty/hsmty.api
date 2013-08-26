@@ -119,8 +119,8 @@ post '/status/events' do
         :type => type,
         :created_by => uid
         )
-    "Event Saved"
 
+    "Event Saved"
 end
 
 get '/status/happenings' do

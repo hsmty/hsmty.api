@@ -61,7 +61,6 @@ class APITest < Test::Unit::TestCase
         post '/status/events',
             :type => 'Check-in',
             :name => name
-        puts last_response.body
         assert_equal 200, last_response.status, 
             "Error authorizing the request"
         get '/status/events'
