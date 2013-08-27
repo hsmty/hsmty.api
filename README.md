@@ -70,13 +70,14 @@ the device identified by the token provided.
 
 It takes a JSON object as a document with the notifications to be added to
 the iDevice identified by the token. The object should contain at least the
-id and key properties, the token should be provided by Apple's push API.
+uuid and secret properties, the token should be provided by Apple's push
+API and the URIs must be registered with spaceapi.net .
 
 	PUT /idevice/{Token}
 
 	{
-        'id': {UUID},
-        'key': {KEY},
+        'uuid': {UUID},
+        'secret': {KEY},
 		'spaceapi': [ 
 			"http://acemonstertoys.org/status.json",
 			"https://ackspace.nl/status.php",
