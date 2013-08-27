@@ -26,6 +26,10 @@ List all the current and planned events in the hackerspace.
 
 Adds an event to the calendar, returns an UUID for that event.
 
+    POST /status/events
+    
+    type=Check-in&name=Harrison
+
 ### GET /status/happenings
 
 List all the current and planned happenings in the hackerspace.
@@ -33,6 +37,12 @@ List all the current and planned happenings in the hackerspace.
 ### POST /status/happenings
 
 Adds a happenings to the calendar, returns the id.
+
+    POST /status/happenings
+    
+    time=123456789&name=Fieston&cost=300
+
+The time *must* be in the future.
 
 ## iDevices
 
@@ -60,7 +70,7 @@ the device identified by the token provided.
 
 It takes a JSON object as a document with the notifications to be added to
 the iDevice identified by the token. The object should contain at least the
-id and key properties.
+id and key properties, the token should be provided by Apple's push API.
 
 	PUT /idevice/{Token}
 
