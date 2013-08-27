@@ -23,18 +23,27 @@ class APITest < Test::Unit::TestCase
     end
 
     def test_register
+        delete_device
         device = {
             'uuid' => @@uuid,
             'token' => @@token,
             'secret' => @@key,
             'version' => 0
-            }.to_json
-        put '/idevices/' + @@token, device
+            }
+        body = device.to_json
+        put '/idevices/' + @@token, body
         assert_equal 201, last_response.status, 
             'Failed to register the device: ' + @@token
-        put '/idevices/' + @@token, device
+        put '/idevices/' + @@token, body
         assert_equal 409, last_response.status,
             'Conflict not reported correctly for: ' + @@token
+        delete_device
+        device['spaceapi'] = [
+            "http://acemonstertoys.org/status.json",
+            "https://ackspace.nl/status.php",
+            ]
+        put '/idevices/' + @@token, device.to_json
+        assert_equal 201, last_response.status
         delete_device
     end
 

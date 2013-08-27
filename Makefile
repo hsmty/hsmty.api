@@ -1,6 +1,10 @@
 RUBY=/usr/bin/ruby
 LIB=./lib
 
-test: t/basic.rb t/idevice.rb
+test: test-basic test-idevice
+
+test-basic: t/basic.rb 
 	$(RUBY) -I $(LIB) $(<)
-	$(RUBY) -I $(LIB) t/idevice.rb 
+
+test-idevice: t/idevice.rb
+	$(RUBY) -I $(LIB) $(<)
