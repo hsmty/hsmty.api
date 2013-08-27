@@ -32,6 +32,9 @@ class APITest < Test::Unit::TestCase
         put '/idevices/' + @@token, device
         assert_equal 201, last_response.status, 
             'Failed to register the device: ' + @@token
+        put '/idevices/' + @@token, device
+        assert_equal 409, last_response.status,
+            'Conflict not reported correctly for: ' + @@token
         delete_device
     end
 

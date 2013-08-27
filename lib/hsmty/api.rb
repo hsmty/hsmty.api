@@ -184,13 +184,18 @@ put '/idevices/:token' do |token|
     reg = JSON.parse(request.body.read)
     if (reg and reg['uuid'] and reg['secret']) then
         db = getdbh()
-        db[:idevices].insert(
-            :uuid  => reg['uuid'],
-            :secret => reg['secret'],
-            :token => token,
-            :version => 0
-        )
-        status 201
+        begin
+            db[:idevices].insert(
+                :uuid  => reg['uuid'],
+                :secret => reg['secret'],
+                :token => token,
+                :version => 0
+            )
+
+            status 201
+        rescue
+            status 409
+        end
        
     elsif (reg)
         status 400
