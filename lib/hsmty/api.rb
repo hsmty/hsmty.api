@@ -182,6 +182,11 @@ end
 put '/idevices/:token' do |token|
     request.body.rewind
     reg = JSON.parse(request.body.read)
+    unless valid_token?(token)
+        status 403
+        return 'Invalid token'
+    end
+
     if (reg and reg['uuid'] and reg['secret']) then
         db = getdbh()
         begin
@@ -241,6 +246,10 @@ def createstatus()
     end
 
     return status
+end
+
+def valid_token?(token)
+    return true
 end
 
 def get_uid()
