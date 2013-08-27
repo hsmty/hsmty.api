@@ -32,6 +32,7 @@ class APITest < Test::Unit::TestCase
         put '/idevices/' + @@token, device
         assert_equal 201, last_response.status, 
             'Failed to register the device: ' + @@token
+        delete_device
     end
 
     def create_device
@@ -45,7 +46,7 @@ class APITest < Test::Unit::TestCase
         )
     end
 
-    def delete_token
+    def delete_device
         db = Sequel.sqlite(@@db)
         db[:idevices].where(:uuid => @@uuid).delete
     end
