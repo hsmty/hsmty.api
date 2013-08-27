@@ -8,7 +8,8 @@ require 'bcrypt'
 
 class APITest < Test::Unit::TestCase
     include Rack::Test::Methods
-    @@token = '__test_token'
+    @@uuid = '0000000000000'
+    @@token = '012345689ABCD'
     @@key = 'supersecretkey'
     @@db = '/tmp/hsmty.db'
 
@@ -21,22 +22,36 @@ class APITest < Test::Unit::TestCase
         assert last_response.ok?
     end
 
-    def create_token
+    def test_register
+        device = {
+            'uuid' => @@uuid,
+            'token' => @@token,
+            'secret' => @@key,
+            'version' => 0
+            }.to_json
+        put '/idevices/' + @@token, device
+        assert_equal 201, last_response.status, 
+            'Failed to register the device: ' + @@token
+    end
+
+    def create_device
         hash = BCrypt::Password.create(@@pass)
         db = Sequel.sqlite(@@db)
-        db[:users].insert(
-            :nick => @@user,
-            :password => hash.to_s
+        db[:idevices].insert(
+            :uuid => @@uuid,
+            :token => @@token,
+            :secret => @@key,
+            :version => '0.1'
         )
     end
 
     def delete_token
         db = Sequel.sqlite(@@db)
-        db[:users].where(:nick => @@user).delete
+        db[:idevices].where(:uuid => @@uuid).delete
     end
 
     def clear_updates
         db = Sequel.sqlite(@@db)
-        db[:events].delete
+        db[:idevices_spaces].delete
     end
 end

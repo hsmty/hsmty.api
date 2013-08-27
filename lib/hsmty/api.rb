@@ -180,24 +180,24 @@ get '/idevices/:token' do |token|
 end
 
 put '/idevices/:token' do |token|
-    check_key!
     request.body.rewind
     reg = JSON.parse(request.body.read)
-    if (reg and reg['id'] and reg['key']) then
+    if (reg and reg['uuid'] and reg['secret']) then
         db = getdbh()
         db[:idevices].insert(
-            :id  => reg['id'],
-            :key => reg['key'],
+            :uuid  => reg['uuid'],
+            :secret => reg['secret'],
             :token => token,
             :version => 0
         )
+        status 201
        
     elsif (reg)
         status 400
-        body 'Missing params'
+        'Missing params'
     else
         status 400
-        body 'Invalid Request'
+        'Invalid Request'
     end
 
 end
