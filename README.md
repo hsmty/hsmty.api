@@ -24,7 +24,15 @@ List all the current and planned events in the hackerspace.
 
 ### POST /status/events
 
-Adds and event to the calendar, returns an UUID for that event.
+Adds an event to the calendar, returns an UUID for that event.
+
+### GET /status/happenings
+
+List all the current and planned happenings in the hackerspace.
+
+### POST /status/happenings
+
+Adds a happenings to the calendar, returns the id.
 
 ## iDevices
 
