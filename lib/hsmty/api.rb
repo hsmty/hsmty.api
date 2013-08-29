@@ -115,7 +115,7 @@ post '/status/events' do
 
     uid = get_uid()
     db = getdbh()
-    id = db[:events].insert(
+    db[:events].insert(
         :name => name,
         :time => Time.now.to_i,
         :type => type,
@@ -158,6 +158,7 @@ post '/status/happenings' do
     "Event Saved"
 
 end
+
 get '/idevices/?' do
     db = getdbh()
     count = db[:idevices].count
@@ -189,11 +190,12 @@ put '/idevices/:token' do |token|
         return 'Invalid token'
     end
 
-    if (reg and reg['uuid'] and reg['secret']) then
+    device_id = nil
+
+    if reg and reg['secret']
         db = getdbh()
         begin
-            db[:idevices].insert(
-                :uuid  => reg['uuid'],
+            device_id = db[:idevices].insert(
                 :secret => reg['secret'],
                 :token => token,
                 :version => 0
@@ -206,10 +208,20 @@ put '/idevices/:token' do |token|
        
     elsif (reg)
         status 400
-        'Missing params'
+        return 'Missing params'
     else
         status 400
-        'Invalid Request'
+        return 'Invalid Request'
+    end
+
+    if reg['spaceapi'].kind_of?(Array)
+        reg['spaceapi'].each do |uri|
+            space = db[:spaces].where(:uri => uri).get(:id)
+            db[:idevices_spaces].insert(
+                :idevice => device_id, 
+                :space => space
+                ) if space
+        end
     end
 
 end
