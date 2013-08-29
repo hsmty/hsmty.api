@@ -1,3 +1,5 @@
+ENV['RACK_ENV'] = 'test'
+
 require 'hsmty/api'
 require 'test/unit'
 require 'rack/test'

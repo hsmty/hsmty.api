@@ -1,3 +1,5 @@
+ENV['RACK_ENV'] = 'test'
+
 require 'hsmty/api'
 require 'test/unit'
 require 'rack/test'
@@ -24,6 +26,8 @@ class APITest < Test::Unit::TestCase
     end
 
     def test_register
+        delete_device
+        delete_test_endpoint
         create_test_endpoint
         device = {
             'uuid' => @@uuid,
@@ -43,11 +47,11 @@ class APITest < Test::Unit::TestCase
             'Conflict not reported correctly for: ' + @@token
         delete_device
         device['spaceapi'] = [
-            "http://acemonstertoys.org/status.json",
-            "https://ackspace.nl/status.php",
+            "http://notvalid.test/status.json",
             ]
         put '/idevices/' + @@token, device.to_json
-        assert_equal 201, last_response.status
+        assert_equal 400, last_response.status, 
+            "Should fail when registering an invalid URI"
         get '/idevices/' + @@token
         assert last_response.ok?
         delete_device
