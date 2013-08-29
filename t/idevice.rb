@@ -26,6 +26,7 @@ class APITest < Test::Unit::TestCase
     end
 
     def test_register
+        clear_subscriptions
         delete_device
         delete_test_endpoint
         create_test_endpoint
@@ -34,9 +35,6 @@ class APITest < Test::Unit::TestCase
             'token' => @@token,
             'secret' => @@key,
             'version' => 0,
-            'spaceapi' => [
-                @@test_endpoint
-                ]
             }
         body = device.to_json
         put '/idevices/' + @@token, body
@@ -45,6 +43,7 @@ class APITest < Test::Unit::TestCase
         put '/idevices/' + @@token, body
         assert_equal 409, last_response.status,
             'Conflict not reported correctly for: ' + @@token
+        clear_subscriptions
         delete_device
         device['spaceapi'] = [
             "http://notvalid.test/status.json",
@@ -54,6 +53,7 @@ class APITest < Test::Unit::TestCase
             "Should fail when registering an invalid URI"
         get '/idevices/' + @@token
         assert last_response.ok?
+        clear_subscriptions
         delete_device
         delete_test_endpoint
     end
@@ -71,21 +71,21 @@ class APITest < Test::Unit::TestCase
 
     def delete_device
         db = Sequel.sqlite(@@db)
-        db[:idevices].where(:uuid => @@uuid).delete
+        db[:idevices].where(:token => @@token).delete
     end
 
-    def clear_updates
+    def clear_subscriptions
         db = Sequel.sqlite(@@db)
         db[:idevices_spaces].delete
     end
 
     def create_test_endpoint
         db = Sequel.sqlite(@@db)
-        db[:spaces].insert(:name => 'Test', :url => @@test_endpoint)
+        db[:spaces].insert(:name => 'Test', :uri => @@test_endpoint)
     end
 
     def delete_test_endpoint
         db = Sequel.sqlite(@@db)
-        db[:spaces].where(:url => @@test_endpoint).delete
+        db[:spaces].where(:uri => @@test_endpoint).delete
     end
 end
