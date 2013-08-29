@@ -11,6 +11,7 @@ class APITest < Test::Unit::TestCase
     @@uuid = '0000000000000'
     @@token = '012345689ABCD'
     @@key = 'supersecretkey'
+    @@test_endpoint = 'http://test/status.json'
     @@db = '/tmp/hsmty.db'
 
     def app
@@ -23,12 +24,15 @@ class APITest < Test::Unit::TestCase
     end
 
     def test_register
-        delete_device
+        create_test_endpoint
         device = {
             'uuid' => @@uuid,
             'token' => @@token,
             'secret' => @@key,
-            'version' => 0
+            'version' => 0,
+            'spaceapi' => [
+                @@test_endpoint
+                ]
             }
         body = device.to_json
         put '/idevices/' + @@token, body
@@ -68,5 +72,15 @@ class APITest < Test::Unit::TestCase
     def clear_updates
         db = Sequel.sqlite(@@db)
         db[:idevices_spaces].delete
+    end
+
+    def create_test_endpoint
+        db = Sequel.sqlite(@@db)
+        db[:spaces].insert(:name => 'Test', :url => @@test_endpoint)
+    end
+
+    def delete_test_endpoint
+        db = Sequel.sqlite(@@db)
+        db[:spaces].where(:url => @@test_endpoint).delete
     end
 end
