@@ -51,6 +51,7 @@ class APITest < Test::Unit::TestCase
         get '/idevices/' + @@token
         assert last_response.ok?
         delete_device
+        delete_test_endpoint
     end
 
     def create_device
