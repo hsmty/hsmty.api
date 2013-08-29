@@ -3,6 +3,8 @@ require 'json'
 require 'bcrypt'
 require 'sequel'
 
+load 'conf.rb'
+
 helpers do
     def protected!
         return if authorized?
@@ -165,7 +167,7 @@ get '/idevices/?' do
 end
 
 get '/idevices/:token' do |token|
-    check_key!
+    # check_key!
     db = getdbh()
     device = db[:idevices].where(:token => token).first
     if device then
@@ -213,7 +215,7 @@ put '/idevices/:token' do |token|
 end
 
 post '/idevices/:token' do |token|
-    check_key!
+    # check_key!
     request.body.rewind
     req = JSON.parse(request.body.read)
 
@@ -259,5 +261,11 @@ def get_uid()
 end
 
 def getdbh()
-    dbh = Sequel.sqlite('/tmp/hsmty.db')
+    if settings.db_engine == :sqlite
+        dbh = Sequel.sqlite('/tmp/hsmty.db')
+    else
+        dbh = nil
+    end
+
+    return dbh
 end
