@@ -44,6 +44,8 @@ class APITest < Test::Unit::TestCase
             ]
         put '/idevices/' + @@token, device.to_json
         assert_equal 201, last_response.status
+        get '/idevices/' + @@token
+        assert last_response.ok?
         delete_device
     end
 
