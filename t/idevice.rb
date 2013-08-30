@@ -76,6 +76,11 @@ class APITest < Test::Unit::TestCase
         post '/idevices/' + @@token, body.to_json
         assert last_response.ok?
 
+        get '/idevices/' + @@token
+        assert last_response.ok?
+        device = JSON.parse(last_response.body)
+        assert device.is_a?(Hash)
+
         clear_subscriptions
         delete_test_endpoint
         delete_device

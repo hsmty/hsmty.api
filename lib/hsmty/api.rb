@@ -170,15 +170,21 @@ end
 get '/idevices/:token' do |token|
     # check_key!
     db = getdbh()
-    device = db[:idevices].where(:token => token).first
-    if device then
-        { :device => device[:id]}.to_json
-    else
+    spaces = []
+    begin
+        db[:idevices_spaces].join(:idevices).
+            where(:token => token).map { |space|
+                spaces.push(space[:space_id])
+            }
+        {
+            :spaceapi => spaces
+        }.to_json
+    rescue
         status 404
-        body ({
+        {
             :error => 404,
             :msg => 'Device not found'
-        }.to_json)
+        }.to_json
     end
 end
 
