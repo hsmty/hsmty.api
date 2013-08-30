@@ -217,10 +217,16 @@ put '/idevices/:token' do |token|
     if reg['spaceapi'].kind_of?(Array)
         reg['spaceapi'].each do |uri|
             space = db[:spaces].where(:uri => uri).get(:id)
-            db[:idevices_spaces].insert(
-                :idevice => device_id, 
-                :space => space
-                ) if space
+            if space
+                db[:idevices_spaces].insert(
+                    :idevice => device_id, 
+                    :space => space
+                    )
+            else
+                db[:idevices].where(:token => token).delete
+                status 400
+                'Invalid URI'
+            end
         end
     end
 

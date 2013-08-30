@@ -51,8 +51,15 @@ class APITest < Test::Unit::TestCase
         put '/idevices/' + @@token, device.to_json
         assert_equal 400, last_response.status, 
             "Should fail when registering an invalid URI"
+        device['spaceapi'] = [
+            @@test_endpoint
+            ]
+        put '/idevices/' + @@token, device.to_json
+        assert_equal 201, last_response.status,
+            "Failed creating a device with URI"
         get '/idevices/' + @@token
-        assert last_response.ok?
+        assert last_response.ok?,
+            "Failed retrieving the device"
         clear_subscriptions
         delete_device
         delete_test_endpoint
