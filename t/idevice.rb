@@ -61,15 +61,29 @@ class APITest < Test::Unit::TestCase
         assert last_response.ok?,
             "Failed retrieving the device"
         clear_subscriptions
-        delete_device
         delete_test_endpoint
+        delete_device
+    end
+
+    def test_add_uris
+        create_device
+        create_test_endpoint
+        clear_subscriptions
+
+        body = {
+            :add => @@test_endpoint
+            } 
+        post '/idevices/' + @@token, body.to_json
+        assert last_response.ok?
+
+        clear_subscriptions
+        delete_test_endpoint
+        delete_device
     end
 
     def create_device
-        hash = BCrypt::Password.create(@@pass)
         db = Sequel.sqlite(@@db)
         db[:idevices].insert(
-            :uuid => @@uuid,
             :token => @@token,
             :secret => @@key,
             :version => '0.1'
