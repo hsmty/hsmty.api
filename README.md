@@ -42,7 +42,7 @@ Adds a happenings to the calendar, returns the id.
     
     time=123456789&name=Fieston&cost=300
 
-The time *must* be in the future.
+The time **must** be in the future.
 
 ## iDevices
 
@@ -71,7 +71,7 @@ the device identified by the token provided.
 It takes a JSON object as a document with the notifications to be added to
 the iDevice identified by the token. The object should contain at least the
 uuid and secret properties, the token should be provided by Apple's push
-API and the URIs must be registered with spaceapi.net .
+API and the URIs **must** be registered with spaceapi.net .
 
 	PUT /idevice/{Token}
 
