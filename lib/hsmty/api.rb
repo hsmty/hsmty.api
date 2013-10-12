@@ -2,10 +2,16 @@ require 'sinatra'
 require 'json'
 require 'bcrypt'
 require 'sequel'
+require 'openssl'
 
 load 'conf.rb'
 
 helpers do
+
+    def get_hmac (key, data) 
+	return OpenSSL::HMAC.hexdigest(OpenSSL::Digest::Digest.new('sha1'), key, data)      
+    end 
+
     def protected!
         return if authorized?
         headers['WWW-Authenticate'] = 'Basic realm="Restricted Area"'
@@ -21,7 +27,7 @@ helpers do
             hash = db[:users].where(:nick => user).get(:password)
             if hash
                 stored = BCrypt::Password.new(hash)
-            end
+            end			
         end
 
         if stored and stored == pass then
@@ -54,6 +60,11 @@ helpers do
         return false
     end
 
+end
+
+get '/test' do
+	protected!
+	get_hmac('lol', 'hello world')
 end
 
 get '/' do
