@@ -70,21 +70,25 @@ the device identified by the token provided.
 
 It takes a JSON object as a document with the notifications to be added to
 the iDevice identified by the token. The object should contain at least the
-uuid and secret properties, the token should be provided by Apple's push
-API and the URIs **must** be registered with spaceapi.net .
+uuid property, the token should be provided by Apple's push API and the URIs
+ **must** be registered with spaceapi.net .
 
 	PUT /idevice/{Token}
 
 	{
         'uuid': {UUID},
-        'secret': {KEY},
-		'spaceapi': [ 
-			"http://acemonstertoys.org/status.json",
-			"https://ackspace.nl/status.php",
-			"http://status.kreativitaet-trifft-technik.de/status.json",
-			"https://bitlair.nl/statejson.php"
-			]
+	'spaceapi': [ 
+		"http://acemonstertoys.org/status.json",
+		"https://ackspace.nl/status.php",
+		"http://status.kreativitaet-trifft-technik.de/status.json",
+		"https://bitlair.nl/statejson.php"
+		]
 	}
+
+The server with respond with a 201 Created status code and a 'secret' that will 
+be used to sign all future requests to the server. In case that the token fails
+to be verified by the Apple notification server our server will respond with a
+400 Bad Request code.
 
 ### POST /idevice/{TOKEN}
 
