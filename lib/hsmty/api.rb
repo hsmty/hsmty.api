@@ -2,15 +2,10 @@ require 'sinatra'
 require 'json'
 require 'bcrypt'
 require 'sequel'
-require 'openssl'
 
 load 'conf.rb'
 
 helpers do
-
-    def get_hmac (key, data) 
-	return OpenSSL::HMAC.hexdigest(OpenSSL::Digest::Digest.new('sha1'), key, data)      
-    end 
 
     def protected!
         return if authorized?
@@ -60,11 +55,6 @@ helpers do
         return false
     end
 
-end
-
-get '/test' do
-	protected!
-	get_hmac('lol', 'hello world')
 end
 
 get '/' do
