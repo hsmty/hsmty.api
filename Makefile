@@ -8,3 +8,6 @@ test-basic: t/basic.rb
 
 test-idevice: t/idevice.rb
 	$(RUBY) -I $(LIB) $(<)
+
+run: lib/hsmty/api.rb
+	$(RUBY) $(<)
