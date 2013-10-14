@@ -243,6 +243,22 @@ def createstatus()
     return status
 end
 
+def valid_signature?(token, data, signature)
+    db = getdbh()
+    secret = db[:idevices].where(:token => token).get(:secret)
+    check = sign(data, secret)
+
+    if signature == check then
+        return true
+    end
+    
+    return false
+end
+
+def sign(data, key)
+    return 'INVALID'
+end
+
 def valid_token?(token)
     return true
 end
