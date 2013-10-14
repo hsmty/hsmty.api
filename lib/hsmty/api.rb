@@ -33,29 +33,6 @@ helpers do
         return false
     end
 
-    def check_key!
-        return if valid_key?
-        headers['WWW-Authenticate'] = 'Basic real="identification needed"'
-        halt 401, "Not Authorized\n"
-    end
-
-    def valid_key?
-        @auth ||= Rack::Auth::Basic::Request.new(request.env)
-        uuid, key, stored = nil
-        if @auth.provided? and @auth.basic and @auth.credentials then
-            db = getdbh()
-            uuid, key = @auth.credentials
-            hash = db[:idevices].where(:uuid => uuid).get(:secret)
-            stored = BCrypt::Password.new(hash)
-        end
-
-        if stored and stored == key then
-            return true
-        end
-
-        return false
-    end
-
 end
 
 get '/' do
@@ -170,7 +147,6 @@ get '/idevices/?' do
 end
 
 get '/idevices/:token' do |token|
-    # check_key!
     db = getdbh()
     spaces = []
     begin
@@ -233,7 +209,6 @@ put '/idevices/:token' do |token|
 end
 
 post '/idevices/:token' do |token|
-    # check_key!
     request.body.rewind
     req = JSON.parse(request.body.read)
 
