@@ -2,6 +2,7 @@ require 'sinatra'
 require 'json'
 require 'bcrypt'
 require 'sequel'
+require 'securerandom'
 
 load 'conf.rb'
 
@@ -192,33 +193,23 @@ end
 put '/idevices/:token' do |token|
     request.body.rewind
     reg = JSON.parse(request.body.read)
+
     unless valid_token?(token)
         status 403
         return 'Invalid token'
     end
 
     device_id = nil
+    secret = SecureRandom.hex
 
-    if reg and reg['secret']
-        db = getdbh()
-        begin
-            device_id = db[:idevices].insert(
-                :secret => reg['secret'],
-                :token => token,
-                :version => 0
-            )
-
-            status 201
-        rescue
-            status 409
-        end
-       
-    elsif (reg)
-        status 400
-        return 'Missing params'
-    else
-        status 400
-        return 'Invalid Request'
+    begin
+        device_id = db[:idevices].insert(
+            :secret => secret,
+            :token  => token,
+            :version => 0
+        )
+    rescue
+        status 500
     end
 
     if reg['spaceapi'].kind_of?(Array)
@@ -236,6 +227,8 @@ put '/idevices/:token' do |token|
             end
         end
     end
+
+    status 201
 
 end
 
