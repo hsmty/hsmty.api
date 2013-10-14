@@ -245,13 +245,18 @@ end
 
 def valid_signature?(token, data, signature)
     db = getdbh()
-    secret = db[:idevices].where(:token => token).get(:secret)
-    check = sign(data, secret)
 
-    if signature == check then
-        return true
+    # If anything goes wrong we should return false.
+    # And we do!
+    begin
+        secret = db[:idevices].where(:token => token).get(:secret)
+        check = sign(data, secret)
+
+        if signature == check then
+            return true
+        end
     end
-    
+
     return false
 end
 
