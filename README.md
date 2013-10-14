@@ -76,7 +76,6 @@ uuid property, the token should be provided by Apple's push API and the URIs
 	PUT /idevice/{Token}
 
 	{
-        'uuid': {UUID},
 	'spaceapi': [ 
 		"http://acemonstertoys.org/status.json",
 		"https://ackspace.nl/status.php",
@@ -100,14 +99,27 @@ services to be handlend by the server.
 
 	{
         'spaceapi': {
-            'add': ["uri1", "uri2"],
-            'del': ["uri3", "uri4"]
-        }
+		'add': ["uri1", "uri2"],
+		'del': ["uri3", "uri4"]
+		}
 	}
+
+This request must be signed using the secret key that was shared with the client.
 
 ### DELETE /idevice/{TOKEN}
 
 Removes this token and its related information from our server.
+
+This request must be signed using the secret key that was shared with the client.
+
+### Signing requests
+
+To sign a request it must include a HMAC signature in an HTTP header with the following
+format:
+
+	X-Content-HMAC: <hash algorithm> <base64 encoded signature>
+
+Availible hash algorithms: SHA-1, SHA-256
 
 ## Web site manager
 
