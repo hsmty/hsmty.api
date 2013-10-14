@@ -41,7 +41,7 @@ end
 
 get '/status.json' do
 
-    status = createstatus()
+    status = make_status()
 
     headers "Content-type" => 'application/json'
     status.to_json
@@ -227,7 +227,7 @@ post '/idevices/:token' do |token|
     end
 end
         
-def createstatus()
+def make_status()
     db = getdbh()
 
     file = open('status.json')
