@@ -26,9 +26,7 @@ class APITest < Test::Unit::TestCase
     end
 
     def test_register
-        clear_subscriptions
-        delete_device
-        delete_test_endpoint
+        clean!
         create_test_endpoint
         device = {
             'uuid' => @@uuid,
@@ -60,33 +58,8 @@ class APITest < Test::Unit::TestCase
         get '/idevices/' + @@token
         assert last_response.ok?,
             "Failed retrieving the device"
-        clear_subscriptions
-        delete_test_endpoint
-        delete_device
-    end
-
-    def test_add_uris
-        clear_subscriptions
-        delete_test_endpoint
-        delete_device
-        create_device
-        create_test_endpoint
-        clear_subscriptions
-
-        body = {
-            :add => @@test_endpoint
-            } 
-        post '/idevices/' + @@token, body.to_json
-        assert last_response.ok?
-
-        get '/idevices/' + @@token
-        assert last_response.ok?
-        device = JSON.parse(last_response.body)
-        assert device.is_a?(Hash)
-
-        clear_subscriptions
-        delete_test_endpoint
-        delete_device
+    
+        clean!
     end
 
     def create_device
@@ -116,5 +89,11 @@ class APITest < Test::Unit::TestCase
     def delete_test_endpoint
         db = Sequel.sqlite(@@db)
         db[:spaces].where(:uri => @@test_endpoint).delete
+    end
+
+    def clean!
+        delete_device
+        clear_subscriptions
+        delete_test_endpoint
     end
 end
