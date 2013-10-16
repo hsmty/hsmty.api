@@ -34,6 +34,11 @@ helpers do
         return false
     end
 
+    def signed!
+        return if request["X-Content-HMAC"]
+        halt 412, "Content HMAC missing\n"
+    end
+
 end
 
 get '/' do
@@ -150,6 +155,7 @@ end
 get '/idevices/:token' do |token|
     db = getdbh()
     spaces = []
+
     begin
         db[:idevices_spaces].join(:idevices).
             where(:token => token).map { |space|
@@ -206,12 +212,19 @@ put '/idevices/:token' do |token|
     end
 
     status 201
+    { "secret" => secret }.to_json
 
 end
 
 post '/idevices/:token' do |token|
+    signed!
     request.body.rewind
     req = JSON.parse(request.body.read)
+    hmac = request['X-Content-HMAC']
+
+    unless valid_signature?(data, token, hmac) then
+        status 400
+    end
 
     if defined? req['spaceapi']['add'] then
         db = getdbh()
@@ -244,16 +257,21 @@ def make_status()
     return status
 end
 
-def valid_signature?(token, data, signature, hash='sha256')
+def valid_signature?(data, token, hmac, hash='sha256')
     db = getdbh()
 
     # If anything goes wrong we should return false.
     # And we do!
     begin
         secret = db[:idevices].where(:token => token).get(:secret)
+
+        unless secret
+            return false
+        end
+
         check = OpenSSL::HMAC.hexdigest(OpenSSL::Digest::Digest.new(hash), key, data)
 
-        if signature == check then
+        if hmac == check then
             return true
         end
     end
