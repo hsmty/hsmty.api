@@ -43,9 +43,11 @@ class APITest < Test::Unit::TestCase
             'Conflict not reported correctly for: ' + @@token
         clear_subscriptions
         delete_device
-        device['spaceapi'] = [
-            "http://notvalid.test/status.json",
+        device = {
+            'spaceapi' => [
+                "http://notvalid.test/status.json",
             ]
+        }
         put '/idevices/' + @@token, device.to_json
         assert_equal 400, last_response.status, 
             "Should fail when registering an invalid URI"

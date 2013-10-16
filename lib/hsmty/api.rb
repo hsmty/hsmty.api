@@ -202,24 +202,16 @@ put '/idevices/:token' do |token|
         status 500
     end
 
-    if reg['spaceapi'].kind_of?(Array)
-        reg['spaceapi'].each do |uri|
-            space = db[:spaces].where(:uri => uri).get(:id)
-            if space
-                db[:idevices_spaces].insert(
-                    :idevice => device_id, 
-                    :space => space
-                    )
-            else
-                db[:idevices].where(:token => token).delete
-                status 400
-                'Invalid URI'
-            end
+    if reg["spaceapi"].kind_of?(Array)
+        if save_uris(token, reg['spaceapi']) < 0
+            db[:idevices].where(:token => token).delete
+            status 400
+            return {"error" => "Error saving subscriptions"}.to_json
         end
     end
 
     status 201
-    { "secret" => secret }.to_json
+    return { "secret" => secret }.to_json
 
 end
 
@@ -234,20 +226,10 @@ post '/idevices/:token' do |token|
         return { "error" => "Invalid signature"}.to_json
     end
 
-    if defined? req['spaceapi']['add'] then
-        db = getdbh()
-        begin
-            req['spaceapi']['add'].each do |url|
-                id = db[:spaces].where(:url => url).get(:name)
-                db[:spaces_idevices].insert(
-                    :token => token, 
-                    :space => id
-                )
-            end
-        rescue
-            status 500
-            return {"error" => "Error saving the URIs"}.to_json
-        end
+    if defined? req['spaceapi']['add']  and req['spaceapi']['add'].kind_of?(Array)
+
+        save_uris(token, req['spaceapi']['add'])
+
     end
 
     if defined? req['spaceapi']['del'] then
@@ -257,6 +239,26 @@ post '/idevices/:token' do |token|
     return {"status" => "URIs Updated!"}.to_json
 end
         
+def save_uris(token, urls)
+    db = getdbh()
+    status = 1
+    begin
+        urls.each do |url|
+            space = db[:spaces].where(:url => url).get(:id)
+            device = db[:idevices].where(:token => token).get(id)
+            db[:idevices_spaces].insert(
+                :idevice => token, 
+                :space => id
+            )
+            status += 1
+        end
+    rescue
+        status = -1
+    end
+
+    return status
+end
+
 def make_status()
     db = getdbh()
 
