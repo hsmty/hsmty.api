@@ -3,6 +3,7 @@ require 'json'
 require 'bcrypt'
 require 'sequel'
 require 'openssl'
+require 'base64'
 require 'securerandom'
 
 load 'conf.rb'
@@ -219,9 +220,10 @@ post '/idevices/:token' do |token|
     signed!
     request.body.rewind
     req = JSON.parse(request.body.read)
-    hmac = request['X-Content-HMAC']
+    hmac, encoded = request['X-Content-HMAC'].split(" ")
+    hash = Base64.decode64(encoded)
 
-    unless valid_signature?(data, token, hmac) then
+    unless valid_signature?(data, token, hash, hmac) then
         status 400
         return { "error" => "Invalid signature"}.to_json
     end
@@ -276,23 +278,29 @@ def make_status()
     return status
 end
 
-def valid_signature?(data, token, hmac, hash='sha256')
+def valid_signature?(data, token, hash, hmac='sha256')
+    unless ['sha1', 'sha256'].incude? hmac
+        return false
+    end
+
     db = getdbh()
 
     # If anything goes wrong we should return false.
     # And we do!
     begin
         secret = db[:idevices].where(:token => token).get(:secret)
+    rescue
+        return false
+    end
 
-        unless secret
-            return false
-        end
+    unless secret
+        return false
+    end
 
-        check = OpenSSL::HMAC.hexdigest(OpenSSL::Digest::Digest.new(hash), key, data)
+    check = OpenSSL::HMAC.hexdigest(OpenSSL::Digest::Digest.new(hmac), secret, data)
 
-        if hmac == check then
-            return true
-        end
+    if hash == check then
+        return true
     end
 
     return false
