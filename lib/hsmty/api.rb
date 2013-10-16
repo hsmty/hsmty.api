@@ -33,7 +33,6 @@ helpers do
 
         return false
     end
-
     def signed!
         return if request["X-Content-HMAC"]
         halt 412, "Content HMAC missing\n"
@@ -69,8 +68,7 @@ post '/status' do
     db = getdbh()
     current = db[:status].reverse_order(:changed).get(:state)
 
-
-    if status != current then
+    if status != current
 
         db[:status].insert(:state => status, :changed => Time.now().to_i)
     end
@@ -186,6 +184,12 @@ put '/idevices/:token' do |token|
     secret = SecureRandom.hex
 
     begin
+        record = db[:idevices].where(:token => token).get(:id)
+        if record
+            status 409
+            return "409 Conflict\nToken already exists\n"
+        end
+
         device_id = db[:idevices].insert(
             :secret => secret,
             :token  => token,
@@ -224,21 +228,29 @@ post '/idevices/:token' do |token|
 
     unless valid_signature?(data, token, hmac) then
         status 400
+        return { "error" => "Invalid signature"}.to_json
     end
 
     if defined? req['spaceapi']['add'] then
         db = getdbh()
-        req['spaceapi']['add'].each do |url|
-            id = db[:spaces].where(:url => url).get(:name)
-            db[:spaces_idevices].insert(
-                :token => token, 
-                :space => id
-            )
+        begin
+            req['spaceapi']['add'].each do |url|
+                id = db[:spaces].where(:url => url).get(:name)
+                db[:spaces_idevices].insert(
+                    :token => token, 
+                    :space => id
+                )
+            end
+        rescue
+            status 500
+            return {"error" => "Error saving the URIs"}.to_json
         end
     end
 
     if defined? req['spaceapi']['del'] then
     end
+
+    return {"status" => "URIs Updated!"}.to_json
 end
         
 def make_status()
