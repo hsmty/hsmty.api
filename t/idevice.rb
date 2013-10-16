@@ -66,6 +66,9 @@ class APITest < Test::Unit::TestCase
     end
 
     def test_add_uris
+        clear_subscriptions
+        delete_test_endpoint
+        delete_device
         create_device
         create_test_endpoint
         clear_subscriptions
