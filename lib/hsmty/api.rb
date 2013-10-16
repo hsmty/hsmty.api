@@ -33,8 +33,10 @@ helpers do
 
         return false
     end
+
     def signed!
         return if request["X-Content-HMAC"]
+        status 412
         halt 412, "Content HMAC missing\n"
     end
 
@@ -174,6 +176,7 @@ end
 put '/idevices/:token' do |token|
     request.body.rewind
     reg = JSON.parse(request.body.read)
+    db = getdbh
 
     unless valid_token?(token)
         status 403
@@ -183,13 +186,13 @@ put '/idevices/:token' do |token|
     device_id = nil
     secret = SecureRandom.hex
 
-    begin
-        record = db[:idevices].where(:token => token).get(:id)
-        if record
-            status 409
-            return "409 Conflict\nToken already exists\n"
-        end
+    record = db[:idevices].where(:token => token).get(:id)
+    if record
+        status 409
+        return "409 Conflict\nToken already exists\n"
+    end
 
+    begin
         device_id = db[:idevices].insert(
             :secret => secret,
             :token  => token,
@@ -250,6 +253,7 @@ post '/idevices/:token' do |token|
     if defined? req['spaceapi']['del'] then
     end
 
+    status 200
     return {"status" => "URIs Updated!"}.to_json
 end
         
