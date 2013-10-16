@@ -29,7 +29,6 @@ class APITest < Test::Unit::TestCase
         clean!
         create_test_endpoint
         device = {
-            'uuid' => @@uuid,
             'token' => @@token,
             'secret' => @@key,
             'version' => 0,
@@ -75,6 +74,7 @@ class APITest < Test::Unit::TestCase
 
     def delete_device
         db = Sequel.sqlite(@@db)
+        db[:idevices_spaces].delete
         db[:idevices].where(:token => @@token).delete
     end
 

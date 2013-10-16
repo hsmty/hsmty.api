@@ -203,7 +203,7 @@ put '/idevices/:token' do |token|
     end
 
     if reg["spaceapi"].kind_of?(Array)
-        if save_uris(token, reg['spaceapi']) < 0
+        if (save_uris(token, reg['spaceapi']) < 0)
             db[:idevices].where(:token => token).delete
             status 400
             return {"error" => "Error saving subscriptions"}.to_json
@@ -239,24 +239,25 @@ post '/idevices/:token' do |token|
     return {"status" => "URIs Updated!"}.to_json
 end
         
-def save_uris(token, urls)
+def save_uris(token, uris)
     db = getdbh()
-    status = 1
+    saved = 1
     begin
-        urls.each do |url|
-            space = db[:spaces].where(:url => url).get(:id)
-            device = db[:idevices].where(:token => token).get(id)
+        uris.each do |uri|
+            space = db[:spaces].where(:uri => uri).get(:id)
+            device = db[:idevices].where(:token => token).get(:id)
+            
             db[:idevices_spaces].insert(
-                :idevice => token, 
-                :space => id
+                :idevice => device, 
+                :space => space
             )
-            status += 1
+            saved += 1
         end
     rescue
-        status = -1
+        saved = -1
     end
 
-    return status
+    return saved
 end
 
 def make_status()
@@ -305,6 +306,15 @@ def get_uid()
     db = getdbh()
     user, pass = @auth.credentials
     id = db[:users].where(:nick => user).get(:id)
+end
+
+def log(string)
+    if string.nil?
+        string = "-- Empty log --"
+    end 
+    File.open('/tmp/sinatra.log', 'a+') { |file|
+        file.write("#{string}\n")
+    }
 end
 
 def getdbh()
