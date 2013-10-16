@@ -2,6 +2,7 @@ require 'sinatra'
 require 'json'
 require 'bcrypt'
 require 'sequel'
+require 'openssl'
 require 'securerandom'
 
 load 'conf.rb'
@@ -243,14 +244,14 @@ def make_status()
     return status
 end
 
-def valid_signature?(token, data, signature)
+def valid_signature?(token, data, signature, hash='sha256')
     db = getdbh()
 
     # If anything goes wrong we should return false.
     # And we do!
     begin
         secret = db[:idevices].where(:token => token).get(:secret)
-        check = sign(data, secret)
+        check = OpenSSL::HMAC.hexdigest(OpenSSL::Digest::Digest.new(hash), key, data)
 
         if signature == check then
             return true
@@ -258,10 +259,6 @@ def valid_signature?(token, data, signature)
     end
 
     return false
-end
-
-def sign(data, key)
-    return 'INVALID'
 end
 
 def valid_token?(token)
