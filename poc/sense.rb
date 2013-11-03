@@ -2,6 +2,8 @@ require "net/http"
 require "uri"
 
 MACS="/tmp/macs"
+SERVER="api.hsmty.org"
+PORT="80"
 
 def get_macs()
     macs = []
@@ -42,7 +44,7 @@ if (macs & present).length > 0
     status = "open"
 end
 
-http = Net::HTTP.new(conf.server, conf.port)
+http = Net::HTTP.new(SERVER, PORT)
 req = Net::HTTP::Post.new("/status")
 req.set_form_data({"status" => status})
 
