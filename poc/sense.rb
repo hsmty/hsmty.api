@@ -40,7 +40,7 @@ macs = get_macs
 # the status as open to the server, else, send it as
 # closed.
 
-if (macs & present).empty?
+unless (macs & present).empty?
     status = "open"
 end
 
