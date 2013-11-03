@@ -1,24 +1,44 @@
-require "Configuration"
 require "net/http"
 require "uri"
 
-conf = Configuration.load "/etc/sense.conf"
+MACS="/tmp/macs"
+
+def get_macs()
+    macs = []
+    output = `arp-scan --localnet -q`
+    output.each_line do |line|
+        mac = filter_mac(line)
+        macs.push(mac) if mac.length > 0
+    end
+    return macs;
+end
+
+def filter_mac(str)
+    mac = str.match /([A-Fa-f0-9]{2}:?){6}/
+    return mac.to_s
+end
+
 status = "closed"
+present = []
 
 # Read list of MACs from file
-if File.file?(conf.file)
-    mac_file = File.open(conf.file, "r")
+
+if File.file?(MACS)
+    File.open(MACS, "r").each_line do |line|
+        mac = filter_mac(line)
+        present.push(mac) if mac.length > 0
+    end
 else
-    exit
+    exit "error reading file: #{MACS}"
 end
 # Read MAC addresses in the network
-macs = `arp-scan 192.168.1.0/24`
+macs = get_macs
 # clean the 'macs' 
 # Compare addresses, if at least one matches, send
 # the status as open to the server, else, send it as
 # closed.
 
-if macs & mac_file
+if (macs & present).length > 0
     status = "open"
 end
 
@@ -27,3 +47,4 @@ req = Net::HTTP::Post.new("/status")
 req.set_form_data({"status" => status})
 
 res = http.request(req)
+
