@@ -9,7 +9,7 @@ require 'sequel'
 load 'conf.rb'
 
 get '/' do
-    'HSMTY API Web Service'
+    "HSMTY API Web Service"
 end
 
 get '/status.json' do
@@ -23,7 +23,7 @@ post '/status' do
     open = false
     status = params[:status]
 
-    if status == 'open'
+    if status == "open"
         open = true
     elsif status == "close"
         open = false
@@ -45,18 +45,18 @@ post '/status' do
     end
 
     # Return the string 'updated' to the client
-    return {:status => 'Updated'}.to_json
+    return {:status => "Updated"}.to_json
 end
 
 
 def get_status()
     dbh = get_dbh()
 
-    status_file = open('status.json')
+    status_file = open("status.json")
     status = JSON.parse(status_file.read)
 
-    if (status and status['state']) then
-        status[:state][:open] = dbh[:status].reverse_order(:changed).get(:state)
+    if (status and status["state"]) then
+        status["state"]["open"] = dbh[:status].reverse_order(:changed).get(:state)
     else
         status = {}
     end
@@ -70,9 +70,9 @@ def get_dbh()
         dbh = Sequel.sqlite(file)
     elsif settings.db_engine == :postgres
         info = {
-            :host => settings.db_host || 'localhost',
-            :database => settings.db_name || 'api',
-            :user => settings.db_user || 'postgres',
+            :host => settings.db_host || "localhost",
+            :database => settings.db_name || "api",
+            :user => settings.db_user || "postgres",
             :password => settings.db_pass || nil,
             }
         dbh = Sequel.postgres(info)
