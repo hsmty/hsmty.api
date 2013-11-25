@@ -20,13 +20,13 @@ get '/status.json' do
 end
 
 post '/status' do
-    open = false
+    is_open = false
     status = params[:status]
 
     if status == "open"
-        open = true
+        is_open = true
     elsif status == "close"
-        open = false
+        is_open = false
     else
         # Bad request
         halt 400
@@ -35,11 +35,11 @@ post '/status' do
     dbh = get_dbh()
     state = dbh[:status].reverse_order(:changed).get(:state)
 
-    if state != open
+    if state != is_open
         # Update the DB only if the state of the space has
         # changed
         dbh[:status].insert(
-            :state => open, 
+            :state => is_open, 
             :changed => Time.now().to_i
             )
     end
