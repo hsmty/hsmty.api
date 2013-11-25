@@ -3,6 +3,7 @@
 # Minimal version of the api.hsmty.org web service
 require 'sinatra'
 require 'json'
+require 'sequel'
 
 # Load configuration scheme to access the database
 load 'conf.rb'
