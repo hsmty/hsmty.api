@@ -7,8 +7,14 @@ configure do
     set :db_host, 'localhost'
 end
 
+configure :development do
+    set :db_engine, :sqlite
+    set :db_file, '/tmp/hsmty.db'
+    set :idevice_key, '0123456789ABCDEF'
+end
+
 configure :test do
     set :db_engine, :sqlite
-    set :db_name, '/tmp/hsmty.db'
+    set :db_file, '/tmp/hsmty.db'
     set :idevice_key, '0123456789ABCDEF'
 end
