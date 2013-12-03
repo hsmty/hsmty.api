@@ -61,6 +61,10 @@ def get_status()
         status = {}
     end
 
+    if status["state"]["open"].nil? then
+        status["state"]["open"] = false
+    end
+
     return status
 end
 
