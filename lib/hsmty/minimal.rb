@@ -43,6 +43,8 @@ post '/status' do
             )
     end
 
+    dbh.disconnect
+
     # Return the string 'updated' to the client
     return {:status => "Updated"}.to_json
 end
@@ -59,6 +61,8 @@ def get_status()
     else
         status = {}
     end
+
+    dbh.disconnect
 
     if status["state"]["open"].nil? then
         status["state"]["open"] = false
