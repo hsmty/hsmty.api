@@ -15,7 +15,7 @@ end
 get '/status.json' do
     status = get_status()
 
-    headers "Content-type" => "application/json"
+    headers "Content-type" => "application/json; charset=utf-8"
     status.to_json
 end
 
