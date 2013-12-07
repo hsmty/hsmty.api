@@ -39,8 +39,7 @@ post '/status' do
         # Update the DB only if the state of the space has
         # changed
         dbh[:status].insert(
-            :state => is_open, 
-            :changed => Time.now().to_i
+            :state => is_open
             )
     end
 
