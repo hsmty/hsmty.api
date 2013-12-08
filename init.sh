@@ -12,10 +12,8 @@ set -e
 # Short-Description:	HSMTY Web API server
 ### END INIT INFO
 
-RACK_ENV=production
-
 cd /var/www/hsmty_api
-su www-data -c"ruby lib/hsmty/control.rb $1"
+su www-data -c"./lib/hsmty/control.rb $1"
 RETVAL=$?
 
 exit $RETVAL
