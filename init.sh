@@ -15,7 +15,7 @@ set -e
 RACK_ENV=production
 
 cd /var/www/hsmty_api
-sudo -u www-data bundle exec ruby lib/hsmty/control.rb $1
+su www-data -c"ruby lib/hsmty/control.rb $1"
 RETVAL=$?
 
 exit $RETVAL
