@@ -1,12 +1,12 @@
 {
     "api":"0.13",
     "space":"HSMTY",
-    "logo":"http://hsmty.org/images/logo.png",
+    "logo":"http://api.hsmty.org/img/logo.png",
     "url":"http://hsmty.org",
     "location":{
-        "address":"Isaac Garza",
-        "lon":"-100.307364",
-        "lat":"25.679919"
+        "address":"Isaac Garza 735-A, Centro. C.P. 64000 Monterrey, Nuevo León, México",
+        "lon":-100.307364,
+        "lat":25.679919
     },
     "contact":{
         "ml": "general@hsmty.org",
@@ -15,9 +15,10 @@
     },
     "state":{
         "icon":{
-            "open":"http://hsmty.org/images/open.png",
-            "closed":"http://hsmty.org/images/closed.png"
+            "open":"http://api.hsmty.org/img/open.png",
+            "closed":"http://api.hsmty.org/img/closed.png"
         },
         "open": false
-    }
+    },
+    "issue_report_channels": ["ml"]
 }
