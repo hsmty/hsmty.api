@@ -4,7 +4,7 @@ require 'rubygems'
 require 'daemons'
 
 DIR="/var/www/hsmty_api"
-prog="lib/hsmty/minimal.rb"
+prog="lib/hsmty/api.rb"
 
 ENV["RACK_ENV"] = "production"
 
